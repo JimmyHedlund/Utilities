@@ -1,11 +1,17 @@
 # Dependencies
 node_modules/
 vendor/
+.venv/
+__pycache__/
+*.py[cod]
 
 # Build output
 dist/
 build/
 coverage/
+.next/
+out/
+htmlcov/
 *.log
 
 # Environment and secrets
@@ -32,4 +38,6 @@ Thumbs.db
 tmp/
 temp/
 .cache/
-
+uploads/
+outputs/
+minio-data/

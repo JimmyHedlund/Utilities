@@ -1,0 +1,20 @@
+{
+  "name": "md-converter",
+  "private": true,
+  "version": "0.1.0",
+  "description": "PDF and PowerPoint to Markdown conversion web app scaffold.",
+  "workspaces": [
+    "apps/web",
+    "packages/shared-types"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace @md-converter/web run dev",
+    "build:web": "npm --workspace @md-converter/web run build",
+    "typecheck": "npm --workspace @md-converter/shared-types run typecheck && npm --workspace @md-converter/web run typecheck",
+    "lint:web": "npm --workspace @md-converter/web run lint"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
+

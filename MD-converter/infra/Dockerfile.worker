@@ -1,0 +1,8 @@
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+WORKDIR /app
+COPY apps/workers/pyproject.toml apps/workers/pyproject.toml
+RUN uv sync --project apps/workers --no-dev
+COPY apps/workers apps/workers
+WORKDIR /app/apps/workers
+CMD ["uv", "run", "celery", "-A", "app.celery_app.celery_app", "worker", "--loglevel=INFO"]
+

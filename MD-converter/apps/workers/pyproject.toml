@@ -1,0 +1,19 @@
+[project]
+name = "md-converter-workers"
+version = "0.1.0"
+description = "Celery worker scaffold for PDF and PowerPoint to Markdown conversion."
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "celery[redis]>=5.4.0",
+    "pydantic-settings>=2.7.0"
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
