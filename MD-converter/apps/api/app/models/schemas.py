@@ -57,6 +57,7 @@ class CompleteUploadResponse(BaseModel):
     file_id: str
     status: Literal["uploaded"]
     checksum_verified: bool
+    size_verified: bool = True
 
 
 class ConversionOptions(BaseModel):
@@ -128,6 +129,10 @@ class ConversionDownloadResponse(BaseModel):
     expires_at: datetime
 
 
+class ErrorDetail(BaseModel):
+    error_code: UserFacingErrorCode
+    message: str
+
+
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
-

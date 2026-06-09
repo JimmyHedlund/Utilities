@@ -30,6 +30,7 @@ celery_app.conf.update(
     task_routes={
         "documents.preflight": {"queue": "preflight"},
         "documents.split": {"queue": "preflight"},
+        "documents.convert_job": {"queue": "layout"},
         "documents.convert_batch": {"queue": "layout"},
         "documents.merge_outputs": {"queue": "merge"},
         "documents.cleanup": {"queue": "cleanup"},
@@ -37,4 +38,3 @@ celery_app.conf.update(
         "documents.retry_failed_batches": {"queue": "preflight"},
     },
 )
-

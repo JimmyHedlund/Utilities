@@ -9,5 +9,6 @@ This scaffold follows the specification's service split:
 - Redis as the MVP broker.
 - S3-compatible object storage for originals, intermediate batch outputs, final Markdown, and assets.
 
-The current implementation is intentionally shallow. It preserves public interfaces and task names while leaving persistence, queueing, storage, and converter calls for the next milestone.
+The current implementation supports the Phase 1 local flow: presigned MinIO uploads, PostgreSQL-backed files/jobs/outputs, Celery enqueueing, a deterministic worker conversion path, status polling, and final Markdown download URLs.
 
+Batching, real document parsing, OCR, fallback converter routing, asset extraction, and production hardening remain later phases.

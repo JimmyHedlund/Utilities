@@ -14,6 +14,8 @@ class WorkerSettings(BaseSettings):
     s3_endpoint_url: str = "http://localhost:9000"
     s3_bucket_uploads: str = "uploads"
     s3_bucket_outputs: str = "outputs"
+    s3_access_key_id: str = "minioadmin"
+    s3_secret_access_key: str = "minioadmin"
     default_pdf_batch_size: int = 20
     default_ocr_batch_size: int = 5
 
@@ -21,4 +23,3 @@ class WorkerSettings(BaseSettings):
 @lru_cache
 def get_settings() -> WorkerSettings:
     return WorkerSettings()
-

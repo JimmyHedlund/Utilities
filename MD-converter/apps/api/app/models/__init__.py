@@ -5,6 +5,7 @@ from app.models.schemas import (
     ConversionError,
     ConversionJobResponse,
     ConversionOptions,
+    ConversionResult,
     CreateConversionRequest,
     CreateConversionResponse,
     CreateUploadRequest,
@@ -21,6 +22,7 @@ __all__ = [
     "ConversionError",
     "ConversionJobResponse",
     "ConversionOptions",
+    "ConversionResult",
     "CreateConversionRequest",
     "CreateConversionResponse",
     "CreateUploadRequest",
@@ -29,4 +31,3 @@ __all__ = [
     "HealthResponse",
     "ProgressSummary",
 ]
-

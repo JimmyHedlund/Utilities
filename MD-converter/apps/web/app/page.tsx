@@ -1,4 +1,5 @@
-import { FileUp, Play, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import { UploadForm } from "../components/upload-form";
 import { getApiHealth } from "../lib/api";
 
 export default async function UploadPage() {
@@ -16,23 +17,7 @@ export default async function UploadPage() {
 
       <section className="grid">
         <div className="panel">
-          <div className="upload-zone">
-            <FileUp aria-hidden size={48} />
-            <div>
-              <h2>Drop a PDF or PPTX</h2>
-              <p className="muted">The upload workflow is scaffolded and ready for storage integration.</p>
-            </div>
-            <div className="button-row">
-              <button className="button" type="button">
-                <FileUp aria-hidden size={18} />
-                Select file
-              </button>
-              <button className="button secondary" type="button">
-                <Play aria-hidden size={18} />
-                Create test job
-              </button>
-            </div>
-          </div>
+          <UploadForm />
         </div>
 
         <aside className="panel">
@@ -44,11 +29,11 @@ export default async function UploadPage() {
             </li>
             <li>
               <span>Upload validation</span>
-              <span className="badge">stubbed</span>
+              <span className="badge">enabled</span>
             </li>
             <li>
               <span>Worker routing</span>
-              <span className="badge">registered</span>
+              <span className="badge">queued</span>
             </li>
           </ul>
           <p className="muted">
@@ -59,4 +44,3 @@ export default async function UploadPage() {
     </div>
   );
 }
-

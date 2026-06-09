@@ -13,8 +13,11 @@ class Settings(BaseSettings):
     celery_broker_url: str = "redis://localhost:6379/0"
     celery_result_backend: str = "redis://localhost:6379/1"
     s3_endpoint_url: str = "http://localhost:9000"
+    s3_public_endpoint_url: str = "http://localhost:9000"
     s3_bucket_uploads: str = "uploads"
     s3_bucket_outputs: str = "outputs"
+    s3_access_key_id: str = "minioadmin"
+    s3_secret_access_key: str = "minioadmin"
     signed_url_ttl_seconds: int = 3600
     max_upload_size_bytes: int = 524_288_000
     max_pdf_pages: int = 1000
@@ -27,4 +30,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-

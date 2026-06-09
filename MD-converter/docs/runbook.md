@@ -3,10 +3,8 @@
 ## Local health checks
 
 ```bash
-docker compose -f infra/docker-compose.yml config
-uv --project apps/api run pytest
-uv --project apps/workers run pytest
-npm run typecheck
+npm run stack:config
+npm test
 ```
 
 ## Useful endpoints
@@ -19,4 +17,17 @@ npm run typecheck
 - `GET /api/conversions`
 
 Cancel, retry, and download endpoints currently return explicit `501` responses until job persistence and queue integration exist.
+Cancel and retry endpoints currently return explicit `501` responses until Phase 2 adds batch-aware state transitions. Download returns a Markdown URL after a job reaches `succeeded`.
 
+## Local Phase 1 flow
+
+1. Start the stack:
+
+```bash
+npm run stack:up
+```
+
+2. Open the web app at `http://127.0.0.1:3000`.
+3. Upload a `.pdf` or `.pptx`.
+4. Wait for the job detail page to show `succeeded`.
+5. Use the download action to fetch the generated Phase 1 Markdown.

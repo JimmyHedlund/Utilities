@@ -5,7 +5,9 @@ description = "FastAPI scaffold for PDF and PowerPoint to Markdown conversion."
 requires-python = ">=3.12,<3.14"
 dependencies = [
     "alembic>=1.14.0",
+    "celery[redis]>=5.4.0",
     "fastapi>=0.115.0",
+    "md-converter-shared",
     "pydantic-settings>=2.7.0",
     "psycopg[binary]>=3.2.0",
     "sqlalchemy>=2.0.0",
@@ -22,3 +24,5 @@ dev = [
 testpaths = ["tests"]
 pythonpath = ["."]
 
+[tool.uv.sources]
+md-converter-shared = { path = "../../packages/backend-shared", editable = true }

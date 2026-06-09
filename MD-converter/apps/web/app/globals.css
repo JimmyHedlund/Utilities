@@ -36,6 +36,12 @@ select {
   font: inherit;
 }
 
+button:disabled,
+.button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 main {
   padding: 32px;
 }
@@ -158,6 +164,10 @@ nav a:hover {
   padding: 0 14px;
 }
 
+a.button {
+  text-decoration: none;
+}
+
 .button.secondary {
   background: #e8eee8;
   color: var(--ink);
@@ -223,6 +233,16 @@ nav a:hover {
   height: 100%;
 }
 
+.visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 .settings-list {
   display: grid;
   gap: 12px;
@@ -262,4 +282,3 @@ nav a:hover {
     flex-direction: column;
   }
 }
-

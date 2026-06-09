@@ -42,6 +42,8 @@ Done when:
 
 ## Phase 1: MVP Upload And Small-File Conversion
 
+Status: implemented with a deterministic Phase 1 converter.
+
 Goal: support one complete local happy path for small PDF/PPTX files without batching.
 
 Implementation tasks:

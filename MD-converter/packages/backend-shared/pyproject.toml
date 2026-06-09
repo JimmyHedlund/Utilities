@@ -1,0 +1,14 @@
+[project]
+name = "md-converter-shared"
+version = "0.1.0"
+description = "Shared backend primitives for the MD converter API and workers."
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "boto3>=1.35.0",
+    "sqlalchemy>=2.0.0"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+

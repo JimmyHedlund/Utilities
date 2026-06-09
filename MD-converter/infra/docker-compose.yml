@@ -22,6 +22,7 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
       S3_ENDPOINT_URL: http://minio:9000
+      S3_PUBLIC_ENDPOINT_URL: http://localhost:9000
     ports:
       - "8000:8000"
     depends_on:
@@ -42,6 +43,7 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
       S3_ENDPOINT_URL: http://minio:9000
+      S3_PUBLIC_ENDPOINT_URL: http://localhost:9000
     depends_on:
       - api
       - redis
@@ -50,7 +52,75 @@ services:
     build:
       context: ..
       dockerfile: infra/Dockerfile.worker
-    command: uv run celery -A app.celery_app.celery_app worker -Q layout,fast,ocr,pptx,merge,cleanup --loglevel=INFO
+    command: uv run celery -A app.celery_app.celery_app worker -Q layout --loglevel=INFO
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://md_converter:md_converter@postgres:5432/md_converter
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      S3_ENDPOINT_URL: http://minio:9000
+    depends_on:
+      - api
+      - redis
+
+  worker-fast:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.worker
+    command: uv run celery -A app.celery_app.celery_app worker -Q fast --loglevel=INFO
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://md_converter:md_converter@postgres:5432/md_converter
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      S3_ENDPOINT_URL: http://minio:9000
+    depends_on:
+      - api
+      - redis
+
+  worker-ocr:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.worker
+    command: uv run celery -A app.celery_app.celery_app worker -Q ocr --loglevel=INFO --concurrency=1
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://md_converter:md_converter@postgres:5432/md_converter
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      S3_ENDPOINT_URL: http://minio:9000
+    depends_on:
+      - api
+      - redis
+
+  worker-pptx:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.worker
+    command: uv run celery -A app.celery_app.celery_app worker -Q pptx --loglevel=INFO
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://md_converter:md_converter@postgres:5432/md_converter
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      S3_ENDPOINT_URL: http://minio:9000
+    depends_on:
+      - api
+      - redis
+
+  worker-merge:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.worker
+    command: uv run celery -A app.celery_app.celery_app worker -Q merge,cleanup --loglevel=INFO
     env_file:
       - path: ../.env
         required: false
@@ -85,6 +155,7 @@ services:
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_API_CORS_ALLOW_ORIGIN: "*"
     ports:
       - "9000:9000"
       - "9001:9001"

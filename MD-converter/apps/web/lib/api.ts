@@ -1,4 +1,8 @@
-import type { ConversionJob } from "@md-converter/shared-types";
+import type {
+  ConversionJob,
+  CreateConversionResponse,
+  CreateUploadResponse
+} from "@md-converter/shared-types";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -26,6 +30,75 @@ export async function getApiHealth(): Promise<HealthResponse> {
       version: "unknown"
     };
   }
+}
+
+export async function createUploadSession(file: File): Promise<CreateUploadResponse> {
+  const response = await fetch(`${apiBaseUrl}/api/uploads`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      filename: file.name,
+      content_type: file.type,
+      size_bytes: file.size
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error("Could not create upload session");
+  }
+
+  return response.json() as Promise<CreateUploadResponse>;
+}
+
+export async function uploadFileToStorage(file: File, uploadUrl: string): Promise<void> {
+  const response = await fetch(uploadUrl, {
+    method: "PUT",
+    headers: {
+      "Content-Type": file.type
+    },
+    body: file
+  });
+
+  if (!response.ok) {
+    throw new Error("Could not upload file to storage");
+  }
+}
+
+export async function completeUpload(fileId: string): Promise<void> {
+  const response = await fetch(`${apiBaseUrl}/api/uploads/${fileId}/complete`, {
+    method: "POST"
+  });
+
+  if (!response.ok) {
+    throw new Error("Could not complete upload");
+  }
+}
+
+export async function createConversion(fileId: string): Promise<CreateConversionResponse> {
+  const response = await fetch(`${apiBaseUrl}/api/conversions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      file_id: fileId,
+      output_format: "markdown",
+      options: {
+        extract_images: true,
+        ocr: "auto",
+        preserve_page_breaks: true,
+        preferred_converter: "auto"
+      }
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error("Could not create conversion");
+  }
+
+  return response.json() as Promise<CreateConversionResponse>;
 }
 
 export async function listConversionJobs(): Promise<ConversionJob[]> {
@@ -87,3 +160,15 @@ export async function getConversionJob(jobId: string): Promise<ConversionJob> {
   };
 }
 
+export async function getConversionDownload(jobId: string): Promise<string | null> {
+  const response = await fetch(`${apiBaseUrl}/api/conversions/${jobId}/download`, {
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const payload = (await response.json()) as { markdown_url: string };
+  return payload.markdown_url;
+}

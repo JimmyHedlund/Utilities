@@ -5,7 +5,10 @@ description = "Celery worker scaffold for PDF and PowerPoint to Markdown convers
 requires-python = ">=3.12,<3.14"
 dependencies = [
     "celery[redis]>=5.4.0",
-    "pydantic-settings>=2.7.0"
+    "md-converter-shared",
+    "pydantic-settings>=2.7.0",
+    "psycopg[binary]>=3.2.0",
+    "sqlalchemy>=2.0.0"
 ]
 
 [dependency-groups]
@@ -17,3 +20,5 @@ dev = [
 testpaths = ["tests"]
 pythonpath = ["."]
 
+[tool.uv.sources]
+md-converter-shared = { path = "../../packages/backend-shared", editable = true }

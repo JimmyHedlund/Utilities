@@ -1,9 +1,9 @@
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 WORKDIR /app
+COPY packages/backend-shared packages/backend-shared
 COPY apps/api/pyproject.toml apps/api/pyproject.toml
 RUN uv sync --project apps/api --no-dev
 COPY apps/api apps/api
 WORKDIR /app/apps/api
 EXPOSE 8000
 CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-
