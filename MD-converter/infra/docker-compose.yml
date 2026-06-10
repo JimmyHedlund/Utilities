@@ -1,8 +1,11 @@
 services:
   frontend:
+    image: md-converter-frontend:local
     build:
       context: ..
       dockerfile: infra/Dockerfile.web
+      args:
+        NPM_STRICT_SSL: "false"
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
     ports:
@@ -11,9 +14,12 @@ services:
       - api
 
   api:
+    image: md-converter-api:local
     build:
       context: ..
       dockerfile: infra/Dockerfile.api
+      args:
+        UV_TLS_ARGS: "--native-tls --allow-insecure-host pypi.org --allow-insecure-host files.pythonhosted.org"
     env_file:
       - path: ../.env
         required: false
@@ -31,10 +37,13 @@ services:
       - minio
 
   worker-preflight:
+    image: md-converter-worker:local
     build:
       context: ..
       dockerfile: infra/Dockerfile.worker
-    command: uv run celery -A app.celery_app.celery_app worker -Q preflight --loglevel=INFO
+      args:
+        UV_TLS_ARGS: "--native-tls --allow-insecure-host pypi.org --allow-insecure-host files.pythonhosted.org"
+    command: /app/apps/workers/.venv/bin/celery -A app.celery_app.celery_app worker -Q preflight --loglevel=INFO
     env_file:
       - path: ../.env
         required: false
@@ -49,10 +58,8 @@ services:
       - redis
 
   worker-layout:
-    build:
-      context: ..
-      dockerfile: infra/Dockerfile.worker
-    command: uv run celery -A app.celery_app.celery_app worker -Q layout --loglevel=INFO
+    image: md-converter-worker:local
+    command: /app/apps/workers/.venv/bin/celery -A app.celery_app.celery_app worker -Q layout --loglevel=INFO
     env_file:
       - path: ../.env
         required: false
@@ -66,10 +73,8 @@ services:
       - redis
 
   worker-fast:
-    build:
-      context: ..
-      dockerfile: infra/Dockerfile.worker
-    command: uv run celery -A app.celery_app.celery_app worker -Q fast --loglevel=INFO
+    image: md-converter-worker:local
+    command: /app/apps/workers/.venv/bin/celery -A app.celery_app.celery_app worker -Q fast --loglevel=INFO
     env_file:
       - path: ../.env
         required: false
@@ -83,10 +88,8 @@ services:
       - redis
 
   worker-ocr:
-    build:
-      context: ..
-      dockerfile: infra/Dockerfile.worker
-    command: uv run celery -A app.celery_app.celery_app worker -Q ocr --loglevel=INFO --concurrency=1
+    image: md-converter-worker:local
+    command: /app/apps/workers/.venv/bin/celery -A app.celery_app.celery_app worker -Q ocr --loglevel=INFO --concurrency=1
     env_file:
       - path: ../.env
         required: false
@@ -100,10 +103,8 @@ services:
       - redis
 
   worker-pptx:
-    build:
-      context: ..
-      dockerfile: infra/Dockerfile.worker
-    command: uv run celery -A app.celery_app.celery_app worker -Q pptx --loglevel=INFO
+    image: md-converter-worker:local
+    command: /app/apps/workers/.venv/bin/celery -A app.celery_app.celery_app worker -Q pptx --loglevel=INFO
     env_file:
       - path: ../.env
         required: false
@@ -117,10 +118,8 @@ services:
       - redis
 
   worker-merge:
-    build:
-      context: ..
-      dockerfile: infra/Dockerfile.worker
-    command: uv run celery -A app.celery_app.celery_app worker -Q merge,cleanup --loglevel=INFO
+    image: md-converter-worker:local
+    command: /app/apps/workers/.venv/bin/celery -A app.celery_app.celery_app worker -Q merge,cleanup --loglevel=INFO
     env_file:
       - path: ../.env
         required: false

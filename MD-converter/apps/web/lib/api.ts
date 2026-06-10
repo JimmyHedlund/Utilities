@@ -172,3 +172,28 @@ export async function getConversionDownload(jobId: string): Promise<string | nul
   const payload = (await response.json()) as { markdown_url: string };
   return payload.markdown_url;
 }
+
+export async function retryConversion(jobId: string): Promise<ConversionJob | null> {
+  const response = await fetch(`${apiBaseUrl}/api/conversions/${jobId}/retry`, {
+    method: "POST"
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  await response.json();
+  return getConversionJob(jobId);
+}
+
+export async function cancelConversion(jobId: string): Promise<ConversionJob | null> {
+  const response = await fetch(`${apiBaseUrl}/api/conversions/${jobId}/cancel`, {
+    method: "POST"
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.json() as Promise<ConversionJob>;
+}

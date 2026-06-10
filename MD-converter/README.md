@@ -12,12 +12,12 @@ Setup and startup steps. /ToDo
 
 ## Current Local Status
 
-Phase 1 is implemented for local development:
+Phase 2 is implemented for local development:
 
 - Upload `.pdf` and `.pptx` files through presigned MinIO URLs.
-- Persist files, conversion jobs, outputs, and events in PostgreSQL.
-- Queue a Celery worker task for small-file conversion.
-- Produce deterministic placeholder Markdown for the Phase 1 happy path.
+- Persist files, conversion jobs, batches, outputs, and events in PostgreSQL.
+- Queue Celery preflight, split, batch conversion, merge, retry, and cancel state transitions.
+- Produce deterministic placeholder Markdown through the Phase 2 batch pipeline.
 - Poll job status from the web app and download final Markdown after success.
 
 Useful commands:
@@ -27,6 +27,8 @@ npm run stack:up
 npm test
 npm run build:web
 ```
+
+If `npm run stack:up` says the container engine is not reachable on Windows, start Rancher Desktop and wait for its engine to finish starting. This repo uses `docker compose`, so Rancher Desktop should be configured for dockerd/Moby or your Docker CLI context should point at Rancher Desktop.
 
 ## Usage
 How to use the app. /ToDo

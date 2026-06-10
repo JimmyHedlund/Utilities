@@ -1,8 +1,9 @@
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 WORKDIR /app
+ARG UV_TLS_ARGS="--native-tls"
 COPY packages/backend-shared packages/backend-shared
 COPY apps/workers/pyproject.toml apps/workers/pyproject.toml
-RUN uv sync --project apps/workers --no-dev
+RUN uv sync --project apps/workers --no-dev $UV_TLS_ARGS
 COPY apps/workers apps/workers
 WORKDIR /app/apps/workers
-CMD ["uv", "run", "celery", "-A", "app.celery_app.celery_app", "worker", "--loglevel=INFO"]
+CMD ["/app/apps/workers/.venv/bin/celery", "-A", "app.celery_app.celery_app", "worker", "--loglevel=INFO"]

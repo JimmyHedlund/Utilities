@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, JSON, String, Text, func
+from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, JSON, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from md_converter_shared.db.base import Base
@@ -48,7 +48,35 @@ class ConversionJob(Base):
     )
 
     file: Mapped[UploadedFile] = relationship(back_populates="jobs")
+    batches: Mapped[list["ConversionBatch"]] = relationship(back_populates="job")
     outputs: Mapped[list["ConversionOutput"]] = relationship(back_populates="job")
+
+
+class ConversionBatch(Base):
+    __tablename__ = "conversion_batches"
+    __table_args__ = (UniqueConstraint("job_id", "batch_index", name="uq_conversion_batches_job_index"),)
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    job_id: Mapped[str] = mapped_column(String(64), ForeignKey("conversion_jobs.id"), nullable=False)
+    batch_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    start_unit: Mapped[int] = mapped_column(Integer, nullable=False)
+    end_unit: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    converter_route: Mapped[str] = mapped_column(String(64), nullable=False)
+    celery_task_id: Mapped[str | None] = mapped_column(Text)
+    output_storage_key: Mapped[str | None] = mapped_column(Text)
+    assets_prefix: Mapped[str | None] = mapped_column(Text)
+    retry_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    error_code: Mapped[str | None] = mapped_column(String(64))
+    error_message: Mapped[str | None] = mapped_column(Text)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    job: Mapped[ConversionJob] = relationship(back_populates="batches")
 
 
 class ConversionOutput(Base):
@@ -74,4 +102,3 @@ class JobEvent(Base):
     message: Mapped[str | None] = mapped_column(Text)
     details_json: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-

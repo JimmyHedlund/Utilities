@@ -3,7 +3,7 @@
 import type { ConversionJob } from "@md-converter/shared-types";
 import { Download, RefreshCw, RotateCcw, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getConversionDownload, getConversionJob } from "../lib/api";
+import { cancelConversion, getConversionDownload, getConversionJob, retryConversion } from "../lib/api";
 
 interface JobDetailClientProps {
   initialJob: ConversionJob;
@@ -12,6 +12,8 @@ interface JobDetailClientProps {
 export function JobDetailClient({ initialJob }: JobDetailClientProps) {
   const [job, setJob] = useState(initialJob);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const canCancel = ["queued", "preflighting", "splitting", "running", "retrying"].includes(job.status);
+  const canRetry = job.status === "failed";
 
   useEffect(() => {
     let isMounted = true;
@@ -58,6 +60,12 @@ export function JobDetailClient({ initialJob }: JobDetailClientProps) {
               {job.progress.completed_units} / {job.progress.total_units}
             </span>
           </li>
+          <li>
+            <span>Batches</span>
+            <span>
+              {job.batches.succeeded}/{job.batches.total} succeeded, {job.batches.failed} failed
+            </span>
+          </li>
           {job.error ? (
             <li>
               <span>Error</span>
@@ -74,11 +82,21 @@ export function JobDetailClient({ initialJob }: JobDetailClientProps) {
             <RefreshCw aria-hidden size={18} />
             Refresh
           </button>
-          <button className="button secondary" disabled type="button">
+          <button
+            className="button secondary"
+            disabled={!canRetry}
+            onClick={() => void retryConversion(job.job_id).then((nextJob) => nextJob && setJob(nextJob))}
+            type="button"
+          >
             <RotateCcw aria-hidden size={18} />
             Retry
           </button>
-          <button className="button danger" disabled type="button">
+          <button
+            className="button danger"
+            disabled={!canCancel}
+            onClick={() => void cancelConversion(job.job_id).then((nextJob) => nextJob && setJob(nextJob))}
+            type="button"
+          >
             <XCircle aria-hidden size={18} />
             Cancel
           </button>
@@ -98,4 +116,3 @@ export function JobDetailClient({ initialJob }: JobDetailClientProps) {
     </section>
   );
 }
-

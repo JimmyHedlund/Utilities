@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import get_settings
 from app.db.base import Base
-from app.db.models import ConversionJob, ConversionOutput, JobEvent, UploadedFile  # noqa: F401
+from app.db.models import ConversionBatch, ConversionJob, ConversionOutput, JobEvent, UploadedFile  # noqa: F401
 
 settings = get_settings()
 engine = create_engine(settings.database_url, pool_pre_ping=True)
@@ -20,4 +20,3 @@ def get_db() -> Generator[Session, None, None]:
     init_db()
     with SessionLocal() as session:
         yield session
-

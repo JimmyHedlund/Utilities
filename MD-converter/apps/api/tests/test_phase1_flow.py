@@ -34,7 +34,7 @@ def test_phase1_upload_and_conversion_flow(monkeypatch) -> None:
 
     app.dependency_overrides[get_db] = override_db
     monkeypatch.setattr("app.routes.uploads.StorageService", lambda: FakeStorage())
-    monkeypatch.setattr("app.routes.conversions.enqueue_small_conversion", lambda job_id: None)
+    monkeypatch.setattr("app.routes.conversions.enqueue_preflight", lambda job_id: None)
 
     try:
         client = TestClient(app)

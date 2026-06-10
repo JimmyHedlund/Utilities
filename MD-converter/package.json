@@ -12,7 +12,7 @@
     "dev:api": "powershell -ExecutionPolicy Bypass -File scripts/start-api.ps1",
     "dev:web": "powershell -ExecutionPolicy Bypass -File scripts/start-web.ps1",
     "stack:config": "powershell -ExecutionPolicy Bypass -File scripts/compose-config.ps1",
-    "stack:up": "docker compose -f infra/docker-compose.yml up --build",
+    "stack:up": "powershell -ExecutionPolicy Bypass -File scripts/stack-up.ps1",
     "test": "powershell -ExecutionPolicy Bypass -File scripts/test-all.ps1",
     "test:api": "powershell -ExecutionPolicy Bypass -File scripts/test-api.ps1",
     "test:workers": "powershell -ExecutionPolicy Bypass -File scripts/test-workers.ps1",

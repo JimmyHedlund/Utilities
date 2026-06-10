@@ -12,8 +12,16 @@ from app.models import (
     CreateConversionRequest,
     CreateConversionResponse,
 )
-from app.services.jobs import create_conversion_job, get_job, get_latest_output, job_to_response, list_jobs
-from app.services.queue import enqueue_small_conversion
+from app.services.jobs import (
+    cancel_job,
+    create_conversion_job,
+    get_job,
+    get_latest_output,
+    job_to_response,
+    list_jobs,
+    mark_failed_batches_for_retry,
+)
+from app.services.queue import enqueue_preflight, enqueue_retry
 from app.services.storage import StorageService
 
 router = APIRouter(prefix="/conversions", tags=["conversions"])
@@ -33,7 +41,7 @@ def create_conversion(
             },
         )
 
-    enqueue_small_conversion(job.id)
+    enqueue_preflight(job.id)
     return CreateConversionResponse(job_id=job.id, status=job.status)
 
 
@@ -62,28 +70,23 @@ def stream_conversion_events(job_id: str, db: Session = Depends(get_db)) -> Stre
     return StreamingResponse(iter([event]), media_type="text/event-stream")
 
 
-@router.post("/{job_id}/cancel")
-def cancel_conversion(job_id: str) -> None:
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail={
-            "job_id": job_id,
-            "error_code": "not_implemented",
-            "message": "Cancellation requires persistent job state and queue integration.",
-        },
-    )
+@router.post("/{job_id}/cancel", response_model=ConversionJobResponse)
+def cancel_conversion(job_id: str, db: Session = Depends(get_db)) -> ConversionJobResponse:
+    job = cancel_job(db, job_id)
+    if job is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found.")
+
+    return job_to_response(job)
 
 
-@router.post("/{job_id}/retry")
-def retry_conversion(job_id: str) -> None:
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail={
-            "job_id": job_id,
-            "error_code": "not_implemented",
-            "message": "Retry requires batch state and queue integration.",
-        },
-    )
+@router.post("/{job_id}/retry", response_model=CreateConversionResponse)
+def retry_conversion(job_id: str, db: Session = Depends(get_db)) -> CreateConversionResponse:
+    job = mark_failed_batches_for_retry(db, job_id)
+    if job is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found.")
+
+    enqueue_retry(job_id)
+    return CreateConversionResponse(job_id=job.id, status=job.status)
 
 
 @router.get("/{job_id}/download", response_model=ConversionDownloadResponse)

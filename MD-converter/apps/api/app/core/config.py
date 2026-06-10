@@ -24,7 +24,9 @@ class Settings(BaseSettings):
     max_pptx_slides: int = 500
     default_pdf_batch_size: int = 20
     default_ocr_batch_size: int = 5
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
+    cors_origins: list[str] = Field(
+        default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"]
+    )
 
 
 @lru_cache

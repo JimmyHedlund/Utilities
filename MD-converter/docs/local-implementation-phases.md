@@ -1,6 +1,6 @@
 # Local Implementation Phases
 
-This document turns `docs/pdf_pptx_to_markdown_web_app_spec.md` into local, buildable phases. Each phase should leave the repo in a working state with clear verification commands and commit-ready acceptance criteria.
+This document turns `pdf_pptx_to_markdown_web_app_spec.md` into local, buildable phases. Each phase should leave the repo in a working state with clear verification commands and commit-ready acceptance criteria.
 
 Related docs:
 
@@ -36,13 +36,11 @@ docker compose -f infra/docker-compose.yml config
 Done when:
 
 - The scaffold builds and tests locally.
-- The web app loads at `http://127.0.0.1:3000`.
-- The API health check responds at `http://127.0.0.1:8000/health`.
+- The web app loads at `http://localhost:3000`.
+- The API health check responds at `http://localhost:8000/health`.
 - Placeholder endpoints return explicit scaffold behavior rather than silent failures.
 
 ## Phase 1: MVP Upload And Small-File Conversion
-
-Status: implemented with a deterministic Phase 1 converter.
 
 Goal: support one complete local happy path for small PDF/PPTX files without batching.
 
@@ -75,6 +73,8 @@ Done when:
 
 ## Phase 2: Persistence, Preflight, Batching, And Retry
 
+Status: implemented with deterministic preflight and batch conversion.
+
 Goal: make large-document processing reliable by using persisted job state, preflight inspection, batch records, Celery fan-out, deterministic merge, and retry.
 
 Implementation tasks:
@@ -87,6 +87,7 @@ Implementation tasks:
 - Implement merge task behavior that sorts by `batch_index`, joins Markdown, rewrites asset paths, adds YAML front matter, and writes final output.
 - Implement retry for failed batches and job-level retry when safe.
 - Update frontend job detail polling to show batch counts, current stage, errors, cancel, retry, and download states.
+- Add output folder for the markdown file in the ui.
 
 Local verification:
 

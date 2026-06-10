@@ -34,6 +34,23 @@ class StorageService:
         for bucket in (self.config.uploads_bucket, self.config.outputs_bucket):
             if bucket not in existing:
                 self.client.create_bucket(Bucket=bucket)
+            self.client.put_bucket_cors(
+                Bucket=bucket,
+                CORSConfiguration={
+                    "CORSRules": [
+                        {
+                            "AllowedHeaders": ["*"],
+                            "AllowedMethods": ["GET", "HEAD", "PUT"],
+                            "AllowedOrigins": [
+                                "http://localhost:3000",
+                                "http://127.0.0.1:3000",
+                            ],
+                            "ExposeHeaders": ["ETag"],
+                            "MaxAgeSeconds": 3000,
+                        }
+                    ]
+                },
+            )
 
     def create_upload_url(self, storage_key: str, content_type: str) -> str:
         self.ensure_buckets()
@@ -63,6 +80,10 @@ class StorageService:
             ContentType="text/markdown; charset=utf-8",
         )
 
+    def get_output_text(self, storage_key: str) -> str:
+        response = self.client.get_object(Bucket=self.config.outputs_bucket, Key=storage_key)
+        return response["Body"].read().decode("utf-8")
+
     def create_download_url(self, storage_key: str) -> tuple[str, timedelta]:
         public_storage = StorageService(self.config, public_urls=True)
         url = public_storage.client.generate_presigned_url(
@@ -71,4 +92,3 @@ class StorageService:
             ExpiresIn=self.config.signed_url_ttl_seconds,
         )
         return url, timedelta(seconds=self.config.signed_url_ttl_seconds)
-

@@ -21,6 +21,5 @@ Start-Process powershell -ArgumentList @(
   (Join-Path $PSScriptRoot "start-web.ps1")
 ) -WorkingDirectory $repoRoot
 
-Write-Host "API starting at http://127.0.0.1:8000"
-Write-Host "Web starting at http://127.0.0.1:3000"
-
+Write-Host "API starting at http://localhost:8000"
+Write-Host "Web starting at http://localhost:3000"

@@ -12,7 +12,11 @@ def get_celery_client() -> Celery:
     )
 
 
-def enqueue_small_conversion(job_id: str) -> None:
+def enqueue_preflight(job_id: str) -> None:
     celery = get_celery_client()
-    celery.send_task("documents.convert_job", args=[job_id], queue="layout")
+    celery.send_task("documents.preflight", args=[job_id], queue="preflight")
 
+
+def enqueue_retry(job_id: str) -> None:
+    celery = get_celery_client()
+    celery.send_task("documents.retry_failed_batches", args=[job_id], queue="preflight")
